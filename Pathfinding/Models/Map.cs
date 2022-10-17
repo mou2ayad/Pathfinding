@@ -1,0 +1,99 @@
+﻿using Pathfinding.Errors;
+using System.Text.RegularExpressions;
+
+namespace Pathfinding.Models
+{
+    public class Map
+    {
+        private Dictionary<char, Node> _nodes;
+
+        public Map() => _nodes = new();
+
+        public void RegisterRoute(RouteRegistrationRequest request)
+            => RegisterNode(request.From).AddRouteTo(RegisterNode(request.To), request.Distance);
+
+        private Node RegisterNode(char name)
+        {
+            if (!_nodes.TryGetValue(name, out var node))
+            {
+                node = Node.Create(name);
+                _nodes.Add(name, node);
+            }
+            return node;
+        }
+
+        public long CalculateTripDistance(string? tripString)
+        {
+            var route = parseTripRequest(tripString);
+
+            EnsureStopsIsPartOfTheMap(route.ToArray());
+
+            var currentNode = route.First;
+            var firstNode = _nodes[currentNode.Value];
+            currentNode = currentNode.Next;
+            long distance = 0;
+            while (currentNode != null)
+            {
+                var subRoute = firstNode.GetRouteToNode(currentNode.Value);
+                if (subRoute == null)
+                    RouteNotFoundException.Throw();
+                distance += subRoute.Distance;
+                firstNode = subRoute.To;
+                currentNode = currentNode.Next;
+            }
+            return distance;
+        }
+
+        public int FindNumOfTripsWithMaximumStops(char from, char to, int maxStops)
+          => FindTrips(from,to, maxStops, 0).Count;
+
+        public int FindNumOfTripsToWithExactNumOfStops(char from, char to, int NumOfStops)
+            => FindTrips(from, to, NumOfStops, NumOfStops).Count;
+
+        public long FindShortestRouteLength(char from, char to)
+        {
+            var trips= FindTrips(from, to,int.MaxValue,0, false);
+
+            if (trips.Count == 0)
+                RouteNotFoundException.Throw();
+
+            return trips.Min(e => e.Distance);
+        }
+
+        public int FindNumberOfPossibleRoutesWithMaxDistance(char from, char to, long maxDistance)
+        {
+            var trips = FindTrips(from, to, int.MaxValue, 0, true, maxDistance);          
+
+            return trips.Count;
+        }
+
+        private List<Trip> FindTrips(char from, char to,int maxStops, int minStops = 0, bool allowMiltiVisit=true, long? maxDistance=null)
+        {
+            EnsureStopsIsPartOfTheMap(from, to);            
+            return _nodes[from].FindTripsTo(to, maxStops, minStops, allowMiltiVisit,maxDistance);
+        }
+
+        private void EnsureStopsIsPartOfTheMap(params char[] stops)
+        {
+            foreach (var stop in stops.Distinct())
+                if (!_nodes.TryGetValue(stop, out _))
+                    InvalidInputException.Throw($"Stop [{stop}] is not a part of the Map");
+        }
+
+        private static LinkedList<char> parseTripRequest(string? tripString)
+        {
+            if (string.IsNullOrEmpty(tripString))
+                InvalidInputException.Throw($"trip string can't be null or empty");
+
+            var stops = tripString.Split('-', StringSplitOptions.RemoveEmptyEntries).Select(p => p.Trim()).ToList(); ;
+            LinkedList<char> output = new();
+            foreach (var stop in stops)
+            {
+                if (!Regex.IsMatch(stop, "^[A-Za-z]{1}$"))
+                    InvalidInputException.Throw($"invalid trip request the request");
+                output.AddLast(stop[0]);
+            }
+            return output;
+        }
+    }
+}
