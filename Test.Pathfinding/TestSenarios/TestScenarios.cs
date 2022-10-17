@@ -63,7 +63,7 @@ namespace Test.Pathfinding.TestSenarios
         [TestCase('C', 'C', 30, 7)]
         public void TestingFindNumberOfPossibleRoutesWithMaxDistance(char from, char to, long maxDistance, int expectedRoutesNumber)
         {
-            var length = _map.FindNumberOfPossibleRoutesWithMaxDistance(from, to, maxDistance);
+            var length = _map.FindNumberOfPossibleRoutesWithLessThanDistance(from, to, maxDistance);
             length.Should().Be(expectedRoutesNumber);
         }
     }
