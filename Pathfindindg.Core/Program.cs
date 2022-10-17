@@ -4,7 +4,7 @@ using Pathfindindg.app;
 using Pathfinding.Errors;
 using Pathfinding.Models;
 
-var choices = new List<string>() { "1", "2", "3", "4" };
+var choices = new List<string>() { "1", "2", "3", "4", "5" };
 Console.WriteLine("Insert the routes : 'ex': AB5, BC4, CD8, DC8, DE6, AD5, CE2, EB3, AE7");
 var input = Console.ReadLine();
 
@@ -34,6 +34,14 @@ try
                 case "3":
                     NumberOfTripsWithExactStops(map);
                     break;
+
+                case "4":
+                    ShortestRoute(map);
+                    break;
+
+                case "5":
+                    NumberOfPossibleRoutesWithLessThanDistance(map);
+                    break;
             }
         }
         catch (Exception ex)
@@ -51,14 +59,6 @@ catch (Exception ex)
     Console.ReadLine();
 }
 
-void execute(string question, Func<string, object> action)
-{
-    Console.WriteLine(question);
-    input = Console.ReadLine();
-    var result = action(input);
-    Console.WriteLine(result);
-}
-
 void FindDistanceOfRoute(Map map)
 {
     Console.WriteLine("Insert the route to calculate the trip distance : 'ex': A-B-C");
@@ -72,7 +72,7 @@ void NumberOfTripsWithMaximumStops(Map map)
     Console.WriteLine("Insert From & to & Max Stops: 'ex': A B 5");
     input = Console.ReadLine();
     var splits = input.Split(" ");
-    var parsedInput = Helper.ParseTripString(input);
+    var parsedInput = Helper.ParseTripStringWithStops(input);
     var result = map.FindNumOfTripsWithMaximumStops(parsedInput.From, parsedInput.To, parsedInput.maxNumOfStops);
     Console.WriteLine(result);
 }
@@ -81,17 +81,36 @@ void NumberOfTripsWithExactStops(Map map)
     Console.WriteLine("Insert From & to & Number of Stops: 'ex': A B 5");
     input = Console.ReadLine();
     var splits = input.Split(" ");
-    var parsedInput = Helper.ParseTripString(input);
+    var parsedInput = Helper.ParseTripStringWithStops(input);
     var result = map.FindNumOfTripsToWithExactNumOfStops(parsedInput.From, parsedInput.To, parsedInput.maxNumOfStops);
     Console.WriteLine(result);
 }
-
+void ShortestRoute(Map map)
+{
+    Console.WriteLine("Insert From & to [ex => A C]");
+    input = Console.ReadLine();
+    var splits = input.Split(" ");
+    var parsedInput = Helper.ParseTripString(input);
+    var result = map.FindShortestRouteLength(parsedInput.From, parsedInput.To);
+    Console.WriteLine(result);
+}
+void NumberOfPossibleRoutesWithLessThanDistance(Map map)
+{
+    Console.WriteLine("Insert From & to [ex => C C 30]");
+    input = Console.ReadLine();
+    var splits = input.Split(" ");
+    var parsedInput = Helper.ParseTripStringWithStops(input);
+    var result = map.FindNumberOfPossibleRoutesWithLessThanDistance(parsedInput.From, parsedInput.To, parsedInput.maxNumOfStops);
+    Console.WriteLine(result);
+}
 string chooseChallange()
 {
     Console.WriteLine("Choose The Challenge:");
     Console.WriteLine("1- Find Distance of Route");
     Console.WriteLine("2- Number of Trips with maximum stops");
     Console.WriteLine("3- Number of Trips with exact number of stops");
+    Console.WriteLine("4- Find shortest route between 2 stops");
+    Console.WriteLine("5- Find shortest route between 2 stops");
     string choice = Console.ReadLine();
     if (!choices.Contains(choice))
     {

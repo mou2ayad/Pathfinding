@@ -7,7 +7,7 @@
 
         private Trip(Route firstRoute)
         {
-            _routes = new();            
+            _routes = new();
             _stops = new();
             _routes.AddFirst(firstRoute);
             _stops.AddFirst(firstRoute.From);
@@ -22,7 +22,7 @@
             {
                 _routes.AddLast(route);
                 _stops.AddLast(route.To);
-            }            
+            }
         }
 
         public Trip Clone()
@@ -42,7 +42,9 @@
         public Node? To => _stops.Last.Value;
         public int NumberOfStops => _routes.Count;
         public long Distance => _routes.Sum(r => r.Distance);
+
         public bool StopVisited(Node node) => _stops.Contains(node);
-        public override string ToString() => string.Join("->",_stops);
+
+        public override string ToString() => string.Join("->", _stops);
     }
 }

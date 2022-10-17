@@ -45,14 +45,14 @@ namespace Pathfinding.Models
         }
 
         public int FindNumOfTripsWithMaximumStops(char from, char to, int maxStops)
-          => FindTrips(from,to, maxStops, 0).Count;
+          => FindTrips(from, to, maxStops, 0).Count;
 
         public int FindNumOfTripsToWithExactNumOfStops(char from, char to, int NumOfStops)
             => FindTrips(from, to, NumOfStops, NumOfStops).Count;
 
         public long FindShortestRouteLength(char from, char to)
         {
-            var trips= FindTrips(from, to,int.MaxValue,0, false);
+            var trips = FindTrips(from, to, int.MaxValue, 0, false);
 
             if (trips.Count == 0)
                 RouteNotFoundException.Throw();
@@ -60,17 +60,17 @@ namespace Pathfinding.Models
             return trips.Min(e => e.Distance);
         }
 
-        public int FindNumberOfPossibleRoutesWithMaxDistance(char from, char to, long maxDistance)
+        public int FindNumberOfPossibleRoutesWithLessThanDistance(char from, char to, long distanceThreshold)
         {
-            var trips = FindTrips(from, to, int.MaxValue, 0, true, maxDistance);          
+            var trips = FindTrips(from, to, int.MaxValue, 0, true, distanceThreshold);
 
             return trips.Count;
         }
 
-        private List<Trip> FindTrips(char from, char to,int maxStops, int minStops = 0, bool allowMiltiVisit=true, long? maxDistance=null)
+        private List<Trip> FindTrips(char from, char to, int maxStops, int minStops = 0, bool allowMiltiVisit = true, long? distanceThreshold = null)
         {
-            EnsureStopsIsPartOfTheMap(from, to);            
-            return _nodes[from].FindTripsTo(to, maxStops, minStops, allowMiltiVisit,maxDistance);
+            EnsureStopsIsPartOfTheMap(from, to);
+            return _nodes[from].FindTripsTo(to, maxStops, minStops, allowMiltiVisit, distanceThreshold);
         }
 
         private void EnsureStopsIsPartOfTheMap(params char[] stops)

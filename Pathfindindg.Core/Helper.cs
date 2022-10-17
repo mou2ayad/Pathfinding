@@ -21,7 +21,7 @@ namespace Pathfindindg.app
             return output;
         }
 
-        public static (char From, char To, int maxNumOfStops) ParseTripString(string? input)
+        public static (char From, char To, int maxNumOfStops) ParseTripStringWithStops(string? input)
         {
             if (!string.IsNullOrEmpty(input))
             {
@@ -32,6 +32,21 @@ namespace Pathfindindg.app
                         Regex.IsMatch(stops[1], "^[A-Za-z]$") &&
                         int.TryParse(stops[2], out int num))
                         return new(stops[0][0], stops[1][0], num);
+                }
+            }
+            throw new InvalidInputException($"invalid input");
+        }
+
+        public static (char From, char To) ParseTripString(string? input)
+        {
+            if (!string.IsNullOrEmpty(input))
+            {
+                var stops = input.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(p => p.Trim()).ToList();
+                if (stops.Count == 2)
+                {
+                    if (Regex.IsMatch(stops[0], "^[A-Za-z]$") &&
+                        Regex.IsMatch(stops[1], "^[A-Za-z]$"))
+                        return new(stops[0][0], stops[1][0]);
                 }
             }
             throw new InvalidInputException($"invalid input");

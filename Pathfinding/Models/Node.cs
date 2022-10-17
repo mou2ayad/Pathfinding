@@ -18,22 +18,24 @@ namespace Pathfinding.Models
         public Route? GetRouteToNode(char nodeName)
         {
             return RoutesTo.GetRouteToNode(Node.Create(nodeName));
-        }      
+        }
 
-        internal List<Trip> FindTripsTo(char targetNode, int maxStops, int minStops, bool allowMultiVisit=true, long? maxDistance=null)
+        internal List<Trip> FindTripsTo(char targetNode, int maxStops, int minStops, bool allowMultiVisit = true, long? distanceThreshold = null)
         {
             List<Trip> trips = new();
             foreach (var route in RoutesTo)
             {
                 Trip tr = Trip.Create(route);
 
-                trips.AddRange(route.To.FindTripsTo(tr, targetNode, maxStops, minStops, allowMultiVisit,maxDistance));
+                trips.AddRange(route.To.FindTripsTo(tr, targetNode, maxStops, minStops, allowMultiVisit, distanceThreshold));
             }
             return trips;
         }
 
-        internal List<Trip> FindTripsTo(Trip trip, char targetNode, int maxStops, int minStops, bool allowMultiVisit = true, long? maxDistance = null)
+        internal List<Trip> FindTripsTo(Trip trip, char targetNode, int maxStops, int minStops, bool allowMultiVisit = true, long? distanceThreshold = null)
         {
+            if (distanceThreshold.HasValue && trip.Distance >= distanceThreshold)
+                return new List<Trip>();
 
             List<Trip> trips = new List<Trip>();
 
@@ -42,12 +44,9 @@ namespace Pathfinding.Models
                 if (trip.To.Name == targetNode)
                 {
                     trips.Add(trip);
-                    //if (maxDistance.HasValue && trip.Distance >= maxDistance)
+                    if (!distanceThreshold.HasValue)
                         return trips;
                 }
-
-                // if ( !maxDistance.HasValue &&  trip.Distance >= maxDistance)
-                // return trips;
             }
             if (maxStops == trip.NumberOfStops)
                 return new List<Trip>();
@@ -58,11 +57,11 @@ namespace Pathfinding.Models
                 {
                     if (trip.StopVisited(route.To) && route.To.Name != targetNode)
                         continue;
-                }                                    
-                
+                }
+
                 var tr = trip.Clone();
                 tr.AddRoute(route);
-                trips.AddRange(route.To.FindTripsTo(tr, targetNode, maxStops, minStops, allowMultiVisit, maxDistance));
+                trips.AddRange(route.To.FindTripsTo(tr, targetNode, maxStops, minStops, allowMultiVisit, distanceThreshold));
             }
             return trips;
         }
