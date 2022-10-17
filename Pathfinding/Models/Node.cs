@@ -27,29 +27,37 @@ namespace Pathfinding.Models
             {
                 Trip tr = Trip.Create(route);
 
-                trips.AddRange(route.To.FindTripsTo(tr, targetNode, maxStops, minStops, allowMultiVisit, distanceThreshold));
+                trips.AddRange(
+                    route.To.FindTripsTo(tr, targetNode, maxStops, minStops, allowMultiVisit, distanceThreshold)
+                    );
             }
             return trips;
         }
 
-        internal List<Trip> FindTripsTo(Trip trip, char targetNode, int maxStops, int minStops, bool allowMultiVisit = true, long? distanceThreshold = null)
+        internal List<Trip> FindTripsTo(
+            Trip trip,
+            char targetNode,
+            int maxStops,
+            int minStops,
+            bool allowMultiVisit = true,
+            long? distanceThreshold = null)
         {
-            if (distanceThreshold.HasValue && trip.Distance >= distanceThreshold)
-                return new List<Trip>();
+            if (IsDistanceThresholdAchieved())
+                return EmptyTripsList();
 
-            List<Trip> trips = new List<Trip>();
+            List<Trip> trips = new();
 
-            if (trip.NumberOfStops >= minStops)
+            if (isMinNumberOfStopsAchieved())
             {
-                if (trip.To.Name == targetNode)
+                if (IsTargetStopAchieved())
                 {
                     trips.Add(trip);
-                    if (!distanceThreshold.HasValue)
+                    if (!isDistanceThresholdEnabled())
                         return trips;
                 }
             }
-            if (maxStops == trip.NumberOfStops)
-                return new List<Trip>();
+            if (isMaxNumberOfStopsAchieved())
+                return EmptyTripsList();
 
             foreach (var route in RoutesTo)
             {
@@ -64,6 +72,19 @@ namespace Pathfinding.Models
                 trips.AddRange(route.To.FindTripsTo(tr, targetNode, maxStops, minStops, allowMultiVisit, distanceThreshold));
             }
             return trips;
+
+            bool IsDistanceThresholdAchieved()
+                => isDistanceThresholdEnabled() && trip.Distance >= distanceThreshold;
+
+            bool IsTargetStopAchieved() => trip.To.Name == targetNode;
+
+            bool isDistanceThresholdEnabled() => distanceThreshold.HasValue;
+
+            bool isMaxNumberOfStopsAchieved() => maxStops == trip.NumberOfStops;
+
+            bool isMinNumberOfStopsAchieved() => trip.NumberOfStops >= minStops;
+
+            List<Trip> EmptyTripsList() => new List<Trip>();
         }
 
         public void AddRouteTo(Node toNode, int distance) =>
