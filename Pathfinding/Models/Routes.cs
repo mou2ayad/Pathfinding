@@ -11,11 +11,6 @@ namespace Pathfinding.Models
 
         public Routes() => routes = new HashSet<Route>();
 
-        public Route GetRoute(Node from, Node to)
-        {
-            return routes.First(r => r.From.Equals(from) && r.To.Equals(to));
-        }
-
         public Route? GetRouteToNode(Node Nodeto)
         {
             return routes.FirstOrDefault(r => r.To.Equals(Nodeto));
