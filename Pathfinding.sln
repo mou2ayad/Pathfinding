@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pathfinding", "Pathfinding\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Pathfinding", "Test.Pathfinding\Test.Pathfinding.csproj", "{ED2BBEEB-ADCF-4BDC-909D-F39AB576C6CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pathfindindg.app", "Pathfindindg.Core\Pathfindindg.app.csproj", "{23F2EBD1-A21F-4055-9538-98539939C4AD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pathfindindg.app", "Pathfindindg.app\Pathfindindg.app.csproj", "{23F2EBD1-A21F-4055-9538-98539939C4AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
