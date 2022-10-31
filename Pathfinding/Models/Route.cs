@@ -19,7 +19,6 @@
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            if (object.ReferenceEquals(this, other)) return true;
             return From.Equals(other.From) && To.Equals(other.To);
         }
 

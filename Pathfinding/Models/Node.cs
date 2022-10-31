@@ -25,10 +25,10 @@ namespace Pathfinding.Models
             List<Trip> trips = new();
             foreach (var route in RoutesTo)
             {
-                Trip tr = Trip.Create(route);
+                Trip trip = Trip.Create(route);
 
                 trips.AddRange(
-                    route.To.FindTripsTo(tr, targetNode, maxStops, minStops, allowMultiVisit, distanceThreshold)
+                    route.To.FindTripsTo(trip, targetNode, maxStops, minStops, allowMultiVisit, distanceThreshold)
                     );
             }
             return trips;
@@ -67,9 +67,9 @@ namespace Pathfinding.Models
                         continue;
                 }
 
-                var tr = trip.Clone();
-                tr.AddRoute(route);
-                trips.AddRange(route.To.FindTripsTo(tr, targetNode, maxStops, minStops, allowMultiVisit, distanceThreshold));
+                var copyOfTrip = trip.Clone();
+                copyOfTrip.AddRoute(route);
+                trips.AddRange(route.To.FindTripsTo(copyOfTrip, targetNode, maxStops, minStops, allowMultiVisit, distanceThreshold));
             }
             return trips;
 
@@ -84,7 +84,7 @@ namespace Pathfinding.Models
 
             bool isMinNumberOfStopsAchieved() => trip.NumberOfStops >= minStops;
 
-            List<Trip> EmptyTripsList() => new List<Trip>();
+            List<Trip> EmptyTripsList() => new();
         }
 
         public void AddRouteTo(Node toNode, int distance) =>
@@ -98,7 +98,6 @@ namespace Pathfinding.Models
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            if (object.ReferenceEquals(this, other)) return true;
             return Name == other.Name;
         }
 

@@ -24,22 +24,22 @@ namespace Pathfinding.Models
 
         public long CalculateTripDistance(string? tripString)
         {
-            var route = parseTripRequest(tripString);
+            var trip = parseTripRequest(tripString);
 
-            EnsureStopsIsPartOfTheMap(route.ToArray());
+            EnsureStopsIsPartOfTheMap(trip.ToArray());
 
-            var currentNode = route.First;
-            var firstNode = _nodes[currentNode.Value];
-            currentNode = currentNode.Next;
+            var currentTripStop = trip.First;
+            var currentMapNode = _nodes[currentTripStop.Value];
+            currentTripStop = currentTripStop.Next;
             long distance = 0;
-            while (currentNode != null)
+            while (currentTripStop != null)
             {
-                var subRoute = firstNode.GetRouteToNode(currentNode.Value);
+                var subRoute = currentMapNode.GetRouteToNode(currentTripStop.Value);
                 if (subRoute == null)
                     RouteNotFoundException.Throw();
                 distance += subRoute.Distance;
-                firstNode = subRoute.To;
-                currentNode = currentNode.Next;
+                currentMapNode = subRoute.To;
+                currentTripStop = currentTripStop.Next;
             }
             return distance;
         }
@@ -67,10 +67,10 @@ namespace Pathfinding.Models
             return trips.Count;
         }
 
-        private List<Trip> FindTrips(char from, char to, int maxStops, int minStops = 0, bool allowMiltiVisit = true, long? distanceThreshold = null)
+        private List<Trip> FindTrips(char from, char to, int maxStops, int minStops = 0, bool allowMultiVisit = true, long? distanceThreshold = null)
         {
             EnsureStopsIsPartOfTheMap(from, to);
-            return _nodes[from].FindTripsTo(to, maxStops, minStops, allowMiltiVisit, distanceThreshold);
+            return _nodes[from].FindTripsTo(to, maxStops, minStops, allowMultiVisit, distanceThreshold);
         }
 
         private void EnsureStopsIsPartOfTheMap(params char[] stops)
